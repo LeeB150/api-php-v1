@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file source-language="en" target-language="en" datatype="plaintext" original="file.ext">
+    <body>
+      <trans-unit id="not_blank">
+        <source>This value should not be blank.</source>
+        <target>This value should not be blank.</target>
+      </trans-unit>
+      <trans-unit id="invalid_type">
+        <source>This value should be of type {{ type }}.</source>
+        <target>This value should be of type {{ type }}.</target>
+      </trans-unit>
+      <trans-unit id="invalid_email">
+        <source>This value is not a valid email address.</source>
+        <target>This value is not a valid email address.</target>
+      </trans-unit>
+      <trans-unit id="invalid_pattern">
+        <source>This value does not match the expected pattern {{ pattern }}.</source>
+        <target>This value does not match the expected pattern {{ pattern }}.</target>
+      </trans-unit>
+      <trans-unit id="too_short">
+        <source>This value is too short. It should have {{ limit }} character or more.|This value is too short. It should have {{ limit }} characters or more.</source>
+        <target>This value is too short. It should have {{ limit }} character or more.|This value is too short. It should have {{ limit }} characters or more.</target>
+      </trans-unit>
+      <trans-unit id="too_long">
+        <source>This value is too long. It should have {{ limit }} character or less.|This value is too long. It should have {{ limit }} characters or less.</source>
+        <target>This value is too long. It should have {{ limit }} character or less.|This value is too long. It should have {{ limit }} characters or less.</target>
+      </trans-unit>
+      <trans-unit id="email_exists">
+        <source>The email already exists</source>
+        <target>The email already exists</target>
+      </trans-unit>
+      <trans-unit id="username_exists">
+        <source>The username already exists</source>
+        <target>The username already exists</target>
+      </trans-unit>
+      <trans-unit id="user_created_success">
+        <source>User created successfully</source>
+        <target>User created successfully</target>
+      </trans-unit>
+      <trans-unit id="database_error_create">
+        <source>Error creating user in the database</source>
+        <target>Error creating user in the database</target>
+      </trans-unit>
+      <trans-unit id="no_data_received">
+          <source>No data received</source>
+          <target>No data received</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>
