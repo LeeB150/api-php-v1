@@ -4,7 +4,6 @@ require __DIR__ . '/../vendor/autoload.php';
 
 use App\Core\Router;
 use App\Core\Container;
-use App\Controllers\UserController;
 use Symfony\Component\PasswordHasher\Hasher\PasswordHasherFactory;
 use Symfony\Component\PasswordHasher\Hasher\PasswordHasherFactoryInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasher;
@@ -19,7 +18,7 @@ $container = new Container();
 // Registrar el PasswordHasherFactoryInterface en el Contenedor
 $container->set(PasswordHasherFactoryInterface::class, function () {
     return new PasswordHasherFactory([
-        App\Entity\User::class => ['algorithm' => 'bcrypt'],
+        App\Entity\User::class => ['algorithm' => 'auto'],
     ]);
 });
 
@@ -35,16 +34,10 @@ $container->set(UserPasswordHasherInterface::class, function ($container) {
 // Crear una instancia del Router y pasarle el Contenedor
 $router = new Router($container);
 
-// Agrupar rutas bajo el prefijo '/users'
-$router->group('/users', function (Router $router) {
-    $router->addRoute('GET', '', ['UserController', 'index']); // /users
-    $router->addRoute('GET', '/{id}', ['UserController', 'show']); // /users/{id}
-    $router->addRoute('GET', '/create', ['UserController', 'create']); // /users/create
-    $router->addRoute('POST', '', ['UserController', 'store']); // /users
-    $router->addRoute('GET', '/{id}/edit', ['UserController', 'edit'], ['AuthMiddleware']); // /users/{id}/edit con middleware
-    $router->addRoute('PUT', '/{id}', ['UserController', 'update']); // /users/{id}
-    $router->addRoute('DELETE', '/{id}', ['UserController', 'destroy']); // /users/{id}
-});
+// Cargar rutas desde archivo externo
+$routes = require __DIR__ . '/../config/routes.php';
+$routes($router);
+
 
 // Obtener la URI y el método de la petición
 $uri = $_SERVER['REQUEST_URI'];
