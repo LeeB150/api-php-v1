@@ -18,7 +18,9 @@ $container = new Container();
 
 // Registrar el PasswordHasherFactoryInterface en el Contenedor
 $container->set(PasswordHasherFactoryInterface::class, function () {
-    return new PasswordHasherFactory([]);
+    return new PasswordHasherFactory([
+        App\Entity\User::class => ['algorithm' => 'bcrypt'],
+    ]);
 });
 
 // Registrar el UserPasswordHasherInterface en el Contenedor
