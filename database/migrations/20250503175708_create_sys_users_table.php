@@ -24,7 +24,7 @@ final class CreateSysUsersTable extends AbstractMigration
             ->addColumn('timezone', 'string', ['limit' => 50, 'null' => true, 'default' => null])
             ->addColumn('locale', 'string', ['limit' => 10, 'null' => true, 'default' => null])
             ->addColumn('email_verified_at', 'timestamp', ['null' => true, 'default' => null])
-            ->addColumn('id_role', 'integer', ['null' => true, 'default' => null, 'signed' => false])
+            ->addColumn('id_role', 'integer', ['null' => true, 'default' => 2, 'signed' => false])
             ->addColumn('id_status', 'integer', ['null' => true, 'default' => 1, 'signed' => false])
             ->addColumn('created_by', 'integer', ['null' => true, 'default' => null])
             ->addColumn('created_at', 'timestamp', ['default' => 'CURRENT_TIMESTAMP'])
