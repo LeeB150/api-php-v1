@@ -59,12 +59,7 @@ class UserController extends BaseController
             'id_status' => new Assert\Optional([
                 new Assert\Regex([
                     'pattern' => '/^\d+$/',
-                    'message' => "El parámetro 'id_status' debe ser un entero. Consulte los códigos de estado disponibles.",
-                    'default states' => [
-                        'active' => 1,
-                        'inactive' => 2,
-                        'deleted' => 3, 
-                    ]
+                    'message' => "El parámetro 'id_status' debe ser un entero. Consulte los códigos de estado disponibles. Default Statuses: active (1), inactive (2), deleted (3)."
                 ])
             ]),
             // Para los demás parámetros, se valida su tipo o formato
