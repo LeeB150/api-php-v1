@@ -30,7 +30,7 @@ class UserController extends BaseController
 
     public function index()
     {
-        $allowed_params = ['page', 'limit', 'first_name', 'last_name', 'email', 'username', 'created_at'];
+        $allowed_params = ['page', 'limit', 'id_status', 'first_name', 'last_name', 'email', 'username', 'created_at'];
         
         // Recoger todos los parámetros de la query
         $params = $this->request->query->all();
@@ -54,6 +54,12 @@ class UserController extends BaseController
                 new Assert\Regex([
                     'pattern' => '/^\d+$/',
                     'message' => "El parámetro 'limit' debe ser un entero."
+                ])
+            ]),
+            'id_status' => new Assert\Optional([
+                new Assert\Regex([
+                    'pattern' => '/^\d+$/',
+                    'message' => "El parámetro 'id_status' debe ser un entero. Consulte los códigos de estado disponibles."
                 ])
             ]),
             // Para los demás parámetros, se valida su tipo o formato
