@@ -16,8 +16,8 @@ final class CreateSysStatusTable extends AbstractMigration
 
         // Insertar los estados por defecto
         $data = [
-            ['name' => 'inactive'],
             ['name' => 'active'],
+            ['name' => 'inactive'],
             ['name' => 'deleted']
         ];
 
