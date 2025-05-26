@@ -30,14 +30,128 @@ class UserController extends BaseController
 
     public function index()
     {
-        $users = $this->userModel->getAll();
-        $this->sendJsonResponse($users);
+        $allowed_params = ['page', 'limit', 'first_name', 'last_name', 'email', 'username', 'created_at'];
+        
+        // Recoger todos los parámetros de la query
+        $params = $this->request->query->all();
+
+        foreach ($params as $key => $value) {
+            if (!in_array($key, $allowed_params)) {
+                return $this->sendJsonResponse(['status' => 'error', 'message' => 'Invalid query parameter: '.$key , 'allowed parameters' => implode(', ',$allowed_params)], 400);
+            }
+        }
+
+        // Definir las restricciones para cada parámetro
+        $constraints = new Assert\Collection([
+            // Para page y limit, se valida que sean dígitos (enteros en formato string)
+            'page' => new Assert\Optional([
+                new Assert\Regex([
+                    'pattern' => '/^\d+$/',
+                    'message' => "El parámetro 'page' debe ser un entero."
+                ])
+            ]),
+            'limit' => new Assert\Optional([
+                new Assert\Regex([
+                    'pattern' => '/^\d+$/',
+                    'message' => "El parámetro 'limit' debe ser un entero."
+                ])
+            ]),
+            // Para los demás parámetros, se valida su tipo o formato
+            'first_name' => new Assert\Optional([
+                new Assert\Type([
+                    'type' => 'string',
+                    'message' => "El parámetro 'first_name' debe ser una cadena."
+                ])
+            ]),
+            'last_name' => new Assert\Optional([
+                new Assert\Type([
+                    'type' => 'string',
+                    'message' => "El parámetro 'last_name' debe ser una cadena."
+                ])
+            ]),
+            'email' => new Assert\Optional([
+                new Assert\Type([
+                    'type' => 'string',
+                    'message' => "El parámetro 'email' debe ser una cadena."
+                ])
+            ]),
+            'username' => new Assert\Optional([
+                new Assert\Type([
+                    'type' => 'string',
+                    'message' => "El parámetro 'username' debe ser una cadena."
+                ])
+            ]),
+            'created_at' => new Assert\Optional([
+                new Assert\Date([
+                    'message' => "El parámetro 'created_at' debe tener un formato de fecha válido (YYYY-MM-DD)."
+                ])
+            ]),
+        ]);
+
+        // Validar los parámetros con las restricciones definidas
+        $violations = $this->validator->validate($params, $constraints);
+
+        if (count($violations) > 0) {
+            $errors = [];
+            foreach ($violations as $violation) {
+                $errors[$violation->getPropertyPath()] = $violation->getMessage();
+            }
+            return $this->sendJsonResponse(['status' => 'error', 'message' => $errors], 400);
+        }
+
+        // Filtrar parámetros válidos
+        $filters = [];
+        foreach ($allowed_params as $param) {
+            if ($param === 'page' || $param === 'limit') {
+                continue;
+            }
+            $value = $this->request->query->get($param, null);
+            if ($value !== null && $value !== '') {
+                $filters[$param] = trim($value);
+            }
+        }
+
+        // Parámetros de paginación
+        $page = (int) $this->request->query->get('page', 1);
+        $limit = (int) $this->request->query->get('limit', 3);
+        $offset = ($page - 1) * $limit;
+
+        // Obtener usuarios con filtros
+        $users = $this->userModel->getFilteredPaginated($filters, $limit, $offset);
+
+        if ($users === false) {
+            return $this->sendJsonResponse(['status' => 'error', 'message' => 'Database error occurred'], 500);
+        }
+
+        if (empty($users)) {
+            return $this->sendJsonResponse(['status' => 'error', 'message' => 'No users found'], 404);
+        }
+
+        return $this->sendJsonResponse([
+            'status' => 'success',
+            'message' => 'User(s) found',
+            'data' => $users,
+            'pagination' => [
+                'page' => $page,
+                'limit' => $limit
+            ]
+        ], 200);
     }
+
 
     public function show($id)
     {
         $user = $this->userModel->find($id);
-        $this->sendJsonResponse($user);
+
+        if ($user === false) {
+            return $this->sendJsonResponse(['status' => 'error', 'message' => 'Database error occurred'], 500);
+        }
+
+        if(empty($user)) {
+            $this->sendJsonResponse(['status' => 'error', 'message' => 'User not found'], 404);
+        }
+
+        $this->sendJsonResponse(['status' => 'succes', 'message' => 'User found', 'data' => $user], 200);
     }
 
     public function create()

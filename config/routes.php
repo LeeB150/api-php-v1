@@ -3,7 +3,7 @@ use App\Core\Router;
 
 return function($router) {
     $router->group('/users', function (Router $router) {
-        $router->addRoute('GET', '', ['UserController', 'index']);
+        $router->addRoute('GET', '/list', ['UserController', 'index']);
         $router->addRoute('GET', '/{id}', ['UserController', 'show']);
         $router->addRoute('GET', '/create', ['UserController', 'create']);
         $router->addRoute('POST', '', ['UserController', 'store']);

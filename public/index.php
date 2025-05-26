@@ -39,8 +39,8 @@ $routes = require __DIR__ . '/../config/routes.php';
 $routes($router);
 
 
-// Obtener la URI y el método de la petición
-$uri = $_SERVER['REQUEST_URI'];
+// Obtener y limpiar la URI quitando la query string
+$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $method = $_SERVER['REQUEST_METHOD'];
 
 // Despachar la ruta

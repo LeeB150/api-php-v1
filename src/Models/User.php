@@ -16,16 +16,34 @@ class User
         $this->pdo = Database::getInstance();
     }
 
-    public function getAll()
+    public function getFilteredPaginated($filters, $limit, $offset)
     {
-        try {
-            $stmt = $this->pdo->query("SELECT * FROM {$this->table}");
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            die("Error al obtener usuarios: " . $e->getMessage());
-            return false;
+        $query = "SELECT * FROM {$this->table} WHERE 1=1"; // Condición base
+
+        $params = [];
+
+        foreach ($filters as $key => $value) {
+            if ($value !== null) {
+                $query .= " AND {$key} LIKE :{$key}";
+                $params[$key] = "%{$value}%"; // Agrega parámetros para evitar SQL Injection
+            }
         }
+
+        $query .= " LIMIT :limit OFFSET :offset";
+        
+        $stmt = $this->pdo->prepare($query);
+
+        foreach ($params as $key => $value) {
+            $stmt->bindParam(":{$key}", $value, PDO::PARAM_STR);
+        }
+        
+        $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
+        $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
 
     public function find($id)
     {
@@ -34,8 +52,8 @@ class User
             $stmt->bindParam(':id', $id, PDO::PARAM_INT);
             $stmt->execute();
             return $stmt->fetch(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            die("Error al buscar usuario: " . $e->getMessage());
+        } catch (\PDOException $e) {
+            error_log("Database error: " . $e->getMessage()); // Guarda el error en el log
             return false;
         }
     }
