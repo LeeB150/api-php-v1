@@ -150,7 +150,6 @@ class UserController extends BaseController
         ], 200);
     }
 
-
     public function show($id)
     {
         $user = $this->userModel->find($id);
@@ -160,7 +159,7 @@ class UserController extends BaseController
         }
 
         if(empty($user)) {
-            $this->sendJsonResponse(['status' => 'error', 'message' => 'User not found'], 404);
+            $this->sendJsonResponse(['status' => 'error', 'message' => 'User not found or not active'], 404);
         }
 
         $this->sendJsonResponse(['status' => 'succes', 'message' => 'User found', 'data' => $user], 200);
@@ -176,7 +175,10 @@ class UserController extends BaseController
         $data = json_decode($this->request->getContent(), true);
         // Verificar si se recibieron datos
         if (empty($data)) {
-            $this->sendJsonResponse(['status' => 'error', 'message' => $this->translatorService->trans('No data received', [], 'validators')], 400);
+            $this->sendJsonResponse([
+                'status' => 'error',
+                'message' => 'No data received'
+            ], 400);
             return;
         }
 

@@ -18,37 +18,43 @@ class User
 
     public function getFilteredPaginated($filters, $limit, $offset)
     {
-        $query = "SELECT * FROM {$this->table} WHERE 1=1"; // Condición base
+        try {
+            $query = "SELECT * FROM {$this->table} WHERE 1=1"; // Condición base
 
-        $params = [];
+            $params = [];
 
-        foreach ($filters as $key => $value) {
-            if ($value !== null) {
-                $query .= " AND {$key} LIKE :{$key}";
-                $params[$key] = "%{$value}%"; // Agrega parámetros para evitar SQL Injection
+            foreach ($filters as $key => $value) {
+                if ($value !== null) {
+                    $query .= " AND {$key} LIKE :{$key}";
+                    $params[$key] = "%{$value}%"; // Agrega parámetros para evitar SQL Injection
+                }
             }
+
+            $query .= " LIMIT :limit OFFSET :offset";
+
+            $stmt = $this->pdo->prepare($query);
+
+            foreach ($params as $key => $value) {
+                $stmt->bindParam(":{$key}", $value, PDO::PARAM_STR);
+            }
+
+            $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
+            $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            // Registrar el error y devolver un valor adecuado
+            error_log("Database error (getFilteredPaginated): " . $e->getMessage());
+            return false; // o false, según prefieras manejar el error
         }
-
-        $query .= " LIMIT :limit OFFSET :offset";
-        
-        $stmt = $this->pdo->prepare($query);
-
-        foreach ($params as $key => $value) {
-            $stmt->bindParam(":{$key}", $value, PDO::PARAM_STR);
-        }
-        
-        $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
-        $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
-
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
 
     public function find($id)
     {
         try {
-            $stmt = $this->pdo->prepare("SELECT * FROM {$this->table} WHERE id = :id");
+            $stmt = $this->pdo->prepare("SELECT * FROM {$this->table} WHERE id = :id AND id_status = 1");
             $stmt->bindParam(':id', $id, PDO::PARAM_INT);
             $stmt->execute();
             return $stmt->fetch(PDO::FETCH_ASSOC);
