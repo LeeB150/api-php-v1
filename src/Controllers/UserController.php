@@ -30,7 +30,7 @@ class UserController extends BaseController
 
     public function index()
     {
-        $allowed_params = ['page', 'limit', 'id_status', 'first_name', 'last_name', 'email', 'username', 'created_at'];
+        $allowed_params = ['page', 'limit', 'id_status', 'id_role', 'first_name', 'last_name', 'email', 'username', 'created_at'];
         
         // Recoger todos los parámetros de la query
         $params = $this->request->query->all();
@@ -60,6 +60,12 @@ class UserController extends BaseController
                 new Assert\Regex([
                     'pattern' => '/^\d+$/',
                     'message' => "El parámetro 'id_status' debe ser un entero. Consulte los códigos de estado disponibles. Default Statuses: active (1), inactive (2), deleted (3)."
+                ])
+            ]),
+            'id_role' => new Assert\Optional([
+                new Assert\Regex([
+                    'pattern' => '/^\d+$/',
+                    'message' => "El parámetro 'id_role' debe ser un entero. Consulte los códigos de estado disponibles. Default Roles: admin (1), user (2)."
                 ])
             ]),
             // Para los demás parámetros, se valida su tipo o formato
@@ -172,6 +178,14 @@ class UserController extends BaseController
         if (empty($data)) {
             $this->sendJsonResponse(['status' => 'error', 'message' => $this->translatorService->trans('No data received', [], 'validators')], 400);
             return;
+        }
+
+        if (!empty($data)) {
+            array_walk_recursive($data, function (&$value, $key) {
+                if (is_string($value)) {
+                    $value = trim($value);
+                }
+            });
         }
         // Validar los datos recibidos
         $constraints = new Assert\Collection([
