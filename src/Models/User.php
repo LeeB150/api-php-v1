@@ -50,7 +50,6 @@ class User
         }
     }
 
-
     public function find($id)
     {
         try {
@@ -130,7 +129,7 @@ class User
             $stmtEmail->bindParam(':email', $email);
             $stmtEmail->execute();
             if ($stmtEmail->fetchColumn()) {
-                return 'email'; // El email ya existe
+                return 'email';
             }
         } catch (PDOException $e) {
             die("Error al buscar usuario por email: " . $e->getMessage());

@@ -222,7 +222,7 @@ class UserController extends BaseController
         
         $existing = $this->userModel->findByEmailOrUsername($data['email'], $data['username']);
         if ($existing === 'email') {
-            $this->sendJsonResponse(['status' => 'error', 'message' => $this->translatorService->trans('The email already exists', [], 'validators')], 409);
+            $this->sendJsonResponse(['status' => 'error', 'message' => $this->translatorService->trans('email_exists', [], 'validators')], 409);
             return;
         }
         if ($existing === 'username') {

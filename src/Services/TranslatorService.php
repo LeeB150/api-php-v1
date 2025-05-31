@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use Symfony\Component\Translation\Translator;
-use Symfony\Component\Translation\Loader\XliffFileLoader;
+use Symfony\Component\Translation\Loader\YamlFileLoader;
 use Symfony\Component\HttpFoundation\Request;
 
 class TranslatorService
@@ -17,11 +17,11 @@ class TranslatorService
 
     private function initializeTranslator(Request $request)
     {
-        $locale = $request ? $request->getPreferredLanguage(['es', 'en']) : 'es'; // Fallback
+        $locale = $request ? $request->getPreferredLanguage(['es', 'en']) : 'en'; // Fallback
         $this->translator = new Translator($locale);
-        $this->translator->addLoader('xliff', new XliffFileLoader());
-        $this->translator->addResource('xliff', __DIR__ . '/../../translations/validators.es.xlf', 'es', 'validators');
-        $this->translator->addResource('xliff', __DIR__ . '/../../translations/validators.en.xlf', 'en', 'validators');
+        $this->translator->addLoader('yaml', new YamlFileLoader());
+        $this->translator->addResource('yaml', __DIR__ . '/../../translations/validators.es.yaml', 'es', 'validators');
+        $this->translator->addResource('yaml', __DIR__ . '/../../translations/validators.en.yaml', 'en', 'validators');
     }
 
     public function getTranslator(): Translator
